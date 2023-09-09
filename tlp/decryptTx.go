@@ -1,10 +1,9 @@
-package main
+package tlp
 
 import (
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/hex"
-	"fmt"
 )
 
 func decrypt(key []byte, ciphertextHex string) ([]byte, error) {
@@ -33,6 +32,8 @@ func decrypt(key []byte, ciphertextHex string) ([]byte, error) {
 	return plaintext, nil
 }
 
+
+/* 
 func main() {
 	// Define a 256-bit (32-byte) secret key
 	key := []byte("3bad4a7985551159ab3431fe63246c5e")
@@ -47,3 +48,5 @@ func main() {
 
 	fmt.Println("Decrypted Data:", string(decryptedData))
 }
+
+ */

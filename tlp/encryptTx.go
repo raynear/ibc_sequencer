@@ -1,15 +1,14 @@
-package main
+package tlp
 
 import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/hex"
-	"fmt"
 	"io"
 )
 
-func encrypt(key []byte, plaintext []byte) (string, error) {
+func encrypt(key []byte, payload []byte) (string, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return "", err
@@ -24,9 +23,9 @@ func encrypt(key []byte, plaintext []byte) (string, error) {
 	// Create a new AES cipher block mode
 	stream := cipher.NewCTR(block, iv)
 
-	// Encrypt the plaintext
-	ciphertext := make([]byte, len(plaintext))
-	stream.XORKeyStream(ciphertext, plaintext)
+	// Encrypt the payload
+	ciphertext := make([]byte, len(payload))
+	stream.XORKeyStream(ciphertext, payload)
 
 	// Prepend the IV to the ciphertext
 	ciphertext = append(iv, ciphertext...)
@@ -38,15 +37,16 @@ func encrypt(key []byte, plaintext []byte) (string, error) {
 }
 
 
+/* 
 func main() {
 	// Define a 256-bit (32-byte) secret key
 	key := []byte("3bad4a7985551159ab3431fe63246c5e")
 
 	// Data to be encrypted
-	plaintext := []byte("Hello World")
+	payload := []byte("Hello World")
 
 	// Encrypt the data
-	encryptedData, err := encrypt(key, plaintext)
+	encryptedData, err := encrypt(key, payload)
 	if err != nil {
 		fmt.Println("Encryption error:", err)
 		return
@@ -54,3 +54,4 @@ func main() {
 
 	fmt.Println("Encrypted Data (Hex):", encryptedData)
 }
+ */

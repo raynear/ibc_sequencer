@@ -1,9 +1,8 @@
-package main
+package tlp
 
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	"fmt"
 	"time"
 )
 
@@ -26,16 +25,16 @@ func createPuzzle(seed string, timeInSeconds int) (string, int) {
 
 	return key, iters
 }
-
+/* 
 func main() {
-	seed := "Hello World"
+	seed := "ekstrac0mp1icAtedseedd"
 	timeInSeconds := 10
 
 	key, iters := createPuzzle(seed, timeInSeconds)
 	fmt.Printf("Final Encryption-Decryption Key: %s\n", key)
 	fmt.Printf("Number of Iterations: %d\n", iters)
 }
-
+ */
 /* 
 
 Final Encryption-Decryption Key: 36bcbe93fdfcb8b1838d61a186270a7bdf9578243c82f6ad680c3c7c20899365

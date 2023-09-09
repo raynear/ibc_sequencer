@@ -21,3 +21,4 @@ func solveTLP(seed string, numIterations int)(string) {
 	return currentHash[:32]
 }
 
+
