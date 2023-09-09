@@ -13,6 +13,7 @@ func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		PortId:     PortID,
 		TxPoolList: []TxPool{},
+		BlockList:  []Block{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -33,6 +34,18 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("duplicated index for txPool")
 		}
 		txPoolIndexMap[index] = struct{}{}
+	}
+	// Check for duplicated ID in block
+	blockIdMap := make(map[uint64]bool)
+	blockCount := gs.GetBlockCount()
+	for _, elem := range gs.BlockList {
+		if _, ok := blockIdMap[elem.Id]; ok {
+			return fmt.Errorf("duplicated id for block")
+		}
+		if elem.Id >= blockCount {
+			return fmt.Errorf("block id should be lower or equal than the last id")
+		}
+		blockIdMap[elem.Id] = true
 	}
 	// this line is used by starport scaffolding # genesis/types/validate
 

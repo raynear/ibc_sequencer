@@ -28,3 +28,9 @@ var (
 func KeyPrefix(p string) []byte {
 	return []byte(p)
 }
+
+const (
+	BlockKey      = "Block/value/"
+	BlockCountKey = "Block/count/"
+	PostKey       = "Post/Key/"
+)

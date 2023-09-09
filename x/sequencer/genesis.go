@@ -12,6 +12,13 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	for _, elem := range genState.TxPoolList {
 		k.SetTxPool(ctx, elem)
 	}
+	// Set all the block
+	for _, elem := range genState.BlockList {
+		k.SetBlock(ctx, elem)
+	}
+
+	// Set block count
+	k.SetBlockCount(ctx, genState.BlockCount)
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetPort(ctx, genState.PortId)
 	// Only try to bind to port if it is not already bound, since we may already own
@@ -34,6 +41,8 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 
 	genesis.PortId = k.GetPort(ctx)
 	genesis.TxPoolList = k.GetAllTxPool(ctx)
+	genesis.BlockList = k.GetAllBlock(ctx)
+	genesis.BlockCount = k.GetBlockCount(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis

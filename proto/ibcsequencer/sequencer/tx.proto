@@ -3,6 +3,7 @@ syntax = "proto3";
 package ibc_sequencer.sequencer;
 
 import "ibcsequencer/sequencer/tx_pool.proto";
+import "ibcsequencer/sequencer/block.proto";
 
 option go_package = "ibc_sequencer/x/sequencer/types";
 
@@ -16,6 +17,9 @@ service Msg {
   rpc SendTlp        (MsgSendTlp       ) returns (MsgSendTlpResponse       );
   rpc CloseRound     (MsgCloseRound    ) returns (MsgCloseRoundResponse    );
   rpc MakeBlock      (MsgMakeBlock     ) returns (MsgMakeBlockResponse     );
+  rpc CreateBlock    (MsgCreateBlock   ) returns (MsgCreateBlockResponse   );
+  rpc UpdateBlock    (MsgUpdateBlock   ) returns (MsgUpdateBlockResponse   );
+  rpc DeleteBlock    (MsgDeleteBlock   ) returns (MsgDeleteBlockResponse   );
 }
 message MsgCreateTxPool {
   string creator = 1;
@@ -58,7 +62,6 @@ message MsgSendCommitmentResponse {}
 message MsgSendPayload {
            uint64 round            = 5;
            string hash             = 6;
-  repeated string encryptedTxs     = 7;
            string creator          = 1;
            string port             = 2;
            string channelID        = 3;
@@ -79,8 +82,11 @@ message MsgSendTlp {
 message MsgSendTlpResponse {}
 
 message MsgCloseRound {
-  string creator = 1;
-  uint64 round   = 2;
+  uint64 round            = 5;
+  string creator          = 1;
+  string port             = 2;
+  string channelID        = 3;
+  uint64 timeoutTimestamp = 4;
 }
 
 message MsgCloseRoundResponse {}
@@ -91,4 +97,28 @@ message MsgMakeBlock {
 }
 
 message MsgMakeBlockResponse {}
+
+message MsgCreateBlock {
+           string creator = 1;
+  repeated string txs     = 2;
+}
+
+message MsgCreateBlockResponse {
+  uint64 id = 1;
+}
+
+message MsgUpdateBlock {
+           string creator = 1;
+           uint64 id      = 2;
+  repeated string txs     = 3;
+}
+
+message MsgUpdateBlockResponse {}
+
+message MsgDeleteBlock {
+  string creator = 1;
+  uint64 id      = 2;
+}
+
+message MsgDeleteBlockResponse {}
 

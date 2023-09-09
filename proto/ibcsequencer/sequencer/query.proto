@@ -7,6 +7,7 @@ import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "ibcsequencer/sequencer/params.proto";
 import "ibcsequencer/sequencer/tx_pool.proto";
+import "ibcsequencer/sequencer/block.proto";
 
 option go_package = "ibc_sequencer/x/sequencer/types";
 
@@ -26,6 +27,16 @@ service Query {
   }
   rpc TxPoolAll (QueryAllTxPoolRequest) returns (QueryAllTxPoolResponse) {
     option (google.api.http).get = "/ibc_sequencer/sequencer/tx_pool";
+  
+  }
+  
+  // Queries a list of Block items.
+  rpc Block    (QueryGetBlockRequest) returns (QueryGetBlockResponse) {
+    option (google.api.http).get = "/ibc_sequencer/sequencer/block/{id}";
+  
+  }
+  rpc BlockAll (QueryAllBlockRequest) returns (QueryAllBlockResponse) {
+    option (google.api.http).get = "/ibc_sequencer/sequencer/block";
   
   }
 }
@@ -53,6 +64,23 @@ message QueryAllTxPoolRequest {
 
 message QueryAllTxPoolResponse {
   repeated TxPool                                 txPool     = 1 [(gogoproto.nullable) = false];
+           cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetBlockRequest {
+  uint64 id = 1;
+}
+
+message QueryGetBlockResponse {
+  Block Block = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllBlockRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllBlockResponse {
+  repeated Block                                  Block      = 1 [(gogoproto.nullable) = false];
            cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

@@ -30,6 +30,15 @@ func TestGenesisState_Validate(t *testing.T) {
 						Index: "1",
 					},
 				},
+				BlockList: []types.Block{
+					{
+						Id: 0,
+					},
+					{
+						Id: 1,
+					},
+				},
+				BlockCount: 2,
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -45,6 +54,32 @@ func TestGenesisState_Validate(t *testing.T) {
 						Index: "0",
 					},
 				},
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated block",
+			genState: &types.GenesisState{
+				BlockList: []types.Block{
+					{
+						Id: 0,
+					},
+					{
+						Id: 0,
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "invalid block count",
+			genState: &types.GenesisState{
+				BlockList: []types.Block{
+					{
+						Id: 1,
+					},
+				},
+				BlockCount: 0,
 			},
 			valid: false,
 		},

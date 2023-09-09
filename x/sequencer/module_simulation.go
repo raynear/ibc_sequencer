@@ -44,6 +44,18 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgMakeBlock int = 100
 
+	opWeightMsgCreateBlock = "op_weight_msg_block"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgCreateBlock int = 100
+
+	opWeightMsgUpdateBlock = "op_weight_msg_block"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgUpdateBlock int = 100
+
+	opWeightMsgDeleteBlock = "op_weight_msg_block"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgDeleteBlock int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -66,6 +78,17 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 				Index:   "1",
 			},
 		},
+		BlockList: []types.Block{
+			{
+				Id:      0,
+				Creator: sample.AccAddress(),
+			},
+			{
+				Id:      1,
+				Creator: sample.AccAddress(),
+			},
+		},
+		BlockCount: 2,
 		// this line is used by starport scaffolding # simapp/module/genesisState
 	}
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&sequencerGenesis)
@@ -142,6 +165,39 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgMakeBlock,
 		sequencersimulation.SimulateMsgMakeBlock(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgCreateBlock int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateBlock, &weightMsgCreateBlock, nil,
+		func(_ *rand.Rand) {
+			weightMsgCreateBlock = defaultWeightMsgCreateBlock
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgCreateBlock,
+		sequencersimulation.SimulateMsgCreateBlock(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgUpdateBlock int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateBlock, &weightMsgUpdateBlock, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateBlock = defaultWeightMsgUpdateBlock
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgUpdateBlock,
+		sequencersimulation.SimulateMsgUpdateBlock(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgDeleteBlock int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeleteBlock, &weightMsgDeleteBlock, nil,
+		func(_ *rand.Rand) {
+			weightMsgDeleteBlock = defaultWeightMsgDeleteBlock
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgDeleteBlock,
+		sequencersimulation.SimulateMsgDeleteBlock(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

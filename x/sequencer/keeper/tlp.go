@@ -1,14 +1,18 @@
 package keeper
 
 import (
+	"encoding/binary"
 	"errors"
+	"time"
 
+	"ibc_sequencer/x/sequencer/types"
+
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	clienttypes "github.com/cosmos/ibc-go/v6/modules/core/02-client/types"
 	channeltypes "github.com/cosmos/ibc-go/v6/modules/core/04-channel/types"
 	host "github.com/cosmos/ibc-go/v6/modules/core/24-host"
-	"ibc_sequencer/x/sequencer/types"
 )
 
 // TransmitTlpPacket transmits the packet over IBC with the specified source port and source channel
@@ -40,9 +44,27 @@ func (k Keeper) OnRecvTlpPacket(ctx sdk.Context, packet channeltypes.Packet, dat
 		return packetAck, err
 	}
 
-	// TODO: packet reception logic
+	// TODO: raynear
+	// key := solveTLP(data.Tlp)
+	// tx := k.GetTxPool(ctx, 0)
+	// dec_tx := decrypt(key, tx.payload)
+	// add_dec_tx(dec_tx)
+	// k.SetBlock(ctx, types.Block{Txs: })
+
+	go waitAndDoSomething(ctx, k, data)
 
 	return packetAck, nil
+}
+
+func waitAndDoSomething(ctx sdk.Context, k Keeper, data types.TlpPacketData) {
+	// Calling Sleep method
+	time.Sleep(15 * time.Second)
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PostKey))
+	appendedValue := k.cdc.MustMarshal(&data)
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, 0)
+	store.Set(bz, appendedValue)
+	// 맘대로 저장하기
 }
 
 // OnAcknowledgementTlpPacket responds to the the success or failure of a packet

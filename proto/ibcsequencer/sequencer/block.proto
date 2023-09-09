@@ -1,0 +1,10 @@
+syntax = "proto3";
+package ibc_sequencer.sequencer;
+
+option go_package = "ibc_sequencer/x/sequencer/types";
+
+message Block {
+  uint64 id = 1;
+  repeated string txs = 2; 
+  string creator = 3;
+}

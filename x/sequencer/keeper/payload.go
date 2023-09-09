@@ -3,12 +3,13 @@ package keeper
 import (
 	"errors"
 
+	"ibc_sequencer/x/sequencer/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	clienttypes "github.com/cosmos/ibc-go/v6/modules/core/02-client/types"
 	channeltypes "github.com/cosmos/ibc-go/v6/modules/core/04-channel/types"
 	host "github.com/cosmos/ibc-go/v6/modules/core/24-host"
-	"ibc_sequencer/x/sequencer/types"
 )
 
 // TransmitPayloadPacket transmits the packet over IBC with the specified source port and source channel
@@ -40,7 +41,8 @@ func (k Keeper) OnRecvPayloadPacket(ctx sdk.Context, packet channeltypes.Packet,
 		return packetAck, err
 	}
 
-	// TODO: packet reception logic
+	// TODO: raynear
+	// check hash is right
 
 	return packetAck, nil
 }

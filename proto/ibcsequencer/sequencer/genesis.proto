@@ -5,6 +5,7 @@ package ibc_sequencer.sequencer;
 import "gogoproto/gogo.proto";
 import "ibcsequencer/sequencer/params.proto";
 import "ibcsequencer/sequencer/tx_pool.proto";
+import "ibcsequencer/sequencer/block.proto";
 
 option go_package = "ibc_sequencer/x/sequencer/types";
 
@@ -13,5 +14,7 @@ message GenesisState {
            Params params     = 1 [(gogoproto.nullable) = false];
            string port_id    = 2;
   repeated TxPool txPoolList = 3 [(gogoproto.nullable) = false];
+  repeated Block  blockList  = 4 [(gogoproto.nullable) = false];
+           uint64 blockCount = 5;
 }
 
