@@ -19,6 +19,5 @@ func main() {
 		hashBytes := hash.Sum(nil)
 		currentHash = hex.EncodeToString(hashBytes)
 	}
-
-	fmt.Println("Final Hash:", currentHash)
+	fmt.Println("Final Hash:", currentHash[:32])
 }
