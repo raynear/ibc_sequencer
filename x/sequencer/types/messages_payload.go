@@ -25,7 +25,6 @@ func NewMsgSendPayload(
 		TimeoutTimestamp: timeoutTimestamp,
 		Round:            round,
 		Hash:             hash,
-		EncryptedTxs:     encryptedTxs,
 	}
 }
 
