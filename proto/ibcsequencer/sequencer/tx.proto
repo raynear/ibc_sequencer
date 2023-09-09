@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+package ibc_sequencer.sequencer;
+
+import "ibcsequencer/sequencer/tx_pool.proto";
+
+option go_package = "ibc_sequencer/x/sequencer/types";
+
+// Msg defines the Msg service.
+service Msg {
+  rpc CreateTxPool   (MsgCreateTxPool  ) returns (MsgCreateTxPoolResponse  );
+  rpc UpdateTxPool   (MsgUpdateTxPool  ) returns (MsgUpdateTxPoolResponse  );
+  rpc DeleteTxPool   (MsgDeleteTxPool  ) returns (MsgDeleteTxPoolResponse  );
+  rpc SendCommitment (MsgSendCommitment) returns (MsgSendCommitmentResponse);
+  rpc SendPayload    (MsgSendPayload   ) returns (MsgSendPayloadResponse   );
+  rpc SendTlp        (MsgSendTlp       ) returns (MsgSendTlpResponse       );
+  rpc CloseRound     (MsgCloseRound    ) returns (MsgCloseRoundResponse    );
+  rpc MakeBlock      (MsgMakeBlock     ) returns (MsgMakeBlockResponse     );
+}
+message MsgCreateTxPool {
+  string creator = 1;
+  string index   = 2;
+  string hash    = 3;
+  string payload = 4;
+  uint64 round   = 5;
+}
+
+message MsgCreateTxPoolResponse {}
+
+message MsgUpdateTxPool {
+  string creator = 1;
+  string index   = 2;
+  string hash    = 3;
+  string payload = 4;
+  uint64 round   = 5;
+}
+
+message MsgUpdateTxPoolResponse {}
+
+message MsgDeleteTxPool {
+  string creator = 1;
+  string index   = 2;
+}
+
+message MsgDeleteTxPoolResponse {}
+
+message MsgSendCommitment {
+  uint64 round            = 5;
+  string hash             = 6;
+  string creator          = 1;
+  string port             = 2;
+  string channelID        = 3;
+  uint64 timeoutTimestamp = 4;
+}
+
+message MsgSendCommitmentResponse {}
+
+message MsgSendPayload {
+           uint64 round            = 5;
+           string hash             = 6;
+  repeated string encryptedTxs     = 7;
+           string creator          = 1;
+           string port             = 2;
+           string channelID        = 3;
+           uint64 timeoutTimestamp = 4;
+}
+
+message MsgSendPayloadResponse {}
+
+message MsgSendTlp {
+  string hash             = 5;
+  string tlp              = 6;
+  string creator          = 1;
+  string port             = 2;
+  string channelID        = 3;
+  uint64 timeoutTimestamp = 4;
+}
+
+message MsgSendTlpResponse {}
+
+message MsgCloseRound {
+  string creator = 1;
+  uint64 round   = 2;
+}
+
+message MsgCloseRoundResponse {}
+
+message MsgMakeBlock {
+  string creator = 1;
+  uint64 round   = 2;
+}
+
+message MsgMakeBlockResponse {}
+

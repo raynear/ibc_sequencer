@@ -103,6 +103,9 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
+	sequencermodule "ibc_sequencer/x/sequencer"
+	sequencermodulekeeper "ibc_sequencer/x/sequencer/keeper"
+	sequencermoduletypes "ibc_sequencer/x/sequencer/types"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
 	appparams "ibc_sequencer/app/params"
@@ -161,6 +164,7 @@ var (
 		transfer.AppModuleBasic{},
 		ica.AppModuleBasic{},
 		vesting.AppModuleBasic{},
+		sequencermodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -234,6 +238,8 @@ type App struct {
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 	ScopedICAHostKeeper  capabilitykeeper.ScopedKeeper
 
+	ScopedSequencerKeeper capabilitykeeper.ScopedKeeper
+	SequencerKeeper       sequencermodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// mm is the module manager
@@ -278,6 +284,7 @@ func New(
 		paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey, evidencetypes.StoreKey,
 		ibctransfertypes.StoreKey, icahosttypes.StoreKey, capabilitytypes.StoreKey, group.StoreKey,
 		icacontrollertypes.StoreKey,
+		sequencermoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -489,6 +496,20 @@ func New(
 		govConfig,
 	)
 
+	scopedSequencerKeeper := app.CapabilityKeeper.ScopeToModule(sequencermoduletypes.ModuleName)
+	app.ScopedSequencerKeeper = scopedSequencerKeeper
+	app.SequencerKeeper = *sequencermodulekeeper.NewKeeper(
+		appCodec,
+		keys[sequencermoduletypes.StoreKey],
+		keys[sequencermoduletypes.MemStoreKey],
+		app.GetSubspace(sequencermoduletypes.ModuleName),
+		app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper,
+		scopedSequencerKeeper,
+	)
+	sequencerModule := sequencermodule.NewAppModule(appCodec, app.SequencerKeeper, app.AccountKeeper, app.BankKeeper)
+
+	sequencerIBCModule := sequencermodule.NewIBCModule(app.SequencerKeeper)
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	/**** IBC Routing ****/
@@ -500,6 +521,7 @@ func New(
 	ibcRouter := ibcporttypes.NewRouter()
 	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
 		AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
+	ibcRouter.AddRoute(sequencermoduletypes.ModuleName, sequencerIBCModule)
 	// this line is used by starport scaffolding # ibc/app/router
 	app.IBCKeeper.SetRouter(ibcRouter)
 
@@ -554,6 +576,7 @@ func New(
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		icaModule,
+		sequencerModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
@@ -583,6 +606,7 @@ func New(
 		group.ModuleName,
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
+		sequencermoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
 
@@ -607,6 +631,7 @@ func New(
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
+		sequencermoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
 
@@ -636,6 +661,7 @@ func New(
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
+		sequencermoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
@@ -665,6 +691,7 @@ func New(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
+		sequencerModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()
@@ -869,6 +896,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
+	paramsKeeper.Subspace(sequencermoduletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper

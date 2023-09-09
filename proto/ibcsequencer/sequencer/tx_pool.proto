@@ -1,0 +1,13 @@
+syntax = "proto3";
+package ibc_sequencer.sequencer;
+
+option go_package = "ibc_sequencer/x/sequencer/types";
+
+message TxPool {
+  string index = 1; 
+  string hash = 2; 
+  string payload = 3; 
+  uint64 round = 4; 
+  string creator = 5;
+}
+

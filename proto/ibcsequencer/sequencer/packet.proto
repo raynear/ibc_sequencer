@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package ibc_sequencer.sequencer;
+
+option go_package = "ibc_sequencer/x/sequencer/types";
+
+message SequencerPacketData {
+  oneof packet {
+    NoData               noData           = 1;
+    CommitmentPacketData commitmentPacket = 2;
+    PayloadPacketData    payloadPacket    = 3;
+    TlpPacketData        tlpPacket        = 4;
+  }
+}
+
+message NoData {}
+
+// CommitmentPacketData defines a struct for the packet payload
+message CommitmentPacketData {
+  uint64 round = 1;
+  string hash  = 2;
+}
+
+// CommitmentPacketAck defines a struct for the packet acknowledgment
+message CommitmentPacketAck {}
+
+// PayloadPacketData defines a struct for the packet payload
+message PayloadPacketData {
+           uint64 round        = 1;
+           string hash         = 2;
+  repeated string encryptedTxs = 3;
+}
+
+// PayloadPacketAck defines a struct for the packet acknowledgment
+message PayloadPacketAck {}
+
+// TlpPacketData defines a struct for the packet payload
+message TlpPacketData {
+  string hash = 1;
+  string tlp  = 2;
+}
+
+// TlpPacketAck defines a struct for the packet acknowledgment
+message TlpPacketAck {}
+
