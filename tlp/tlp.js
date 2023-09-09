@@ -2,9 +2,9 @@ const crypto = require("crypto");
 
 // This is the seed which we will give to the sequencer
 const seed = "Hello World";
-const timeInSeconds = 10;
+const timeInSeconds = 20;
 
-// Create time-lock puzzle with the seed and desired time. This function will hash the seed until the time is up. The final hash will be our decryption key.
+// Create time-lock puzzle with the seed and desired time. This function will hash the seed until the time is up. The final hash will be our encryption-decryption key.
 function createPuzzle(seed, timeInSeconds) {
   let key = seed;
   const startTime = Date.now();
@@ -27,7 +27,8 @@ function solvePuzzle(seed, iters) {
 }
 
 const { key, iters } = createPuzzle(seed, timeInSeconds);
+console.log(key, iters);
 
 // Test
 
-console.log(key === solvePuzzle(seed, iters));
+// console.log(key === solvePuzzle(seed, iters));
