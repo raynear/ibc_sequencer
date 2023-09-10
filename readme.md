@@ -4,56 +4,60 @@
 
 ## Get started
 
-```
-ignite chain serve
-```
-
-`serve` command installs dependencies, builds, initializes, and starts your blockchain in development.
-
-### Configure
-
-Your blockchain in development can be configured with `config.yml`. To learn more, see the [Ignite CLI docs](https://docs.ignite.com).
-
-### Web Frontend
-
-Ignite CLI has scaffolded a Vue.js-based web app in the `vue` directory. Run the following commands to install dependencies and start the app:
+First of all we run sequencer(mars) and rollup(venus) and relayer
 
 ```
-cd vue
-npm install
-npm run serve
+// run two node. mars is sequencer. venus is rollup
+$ ignite chain serve -c mars.yml -v
+$ ignite chain serve -c venus.yml -v
+
+// config IBC relayer
+$ ignite relayer configure -a \
+  --source-rpc "http://0.0.0.0:26657" \
+  --source-faucet "http://0.0.0.0:4500" \
+  --source-port "sequencer" \
+  --source-version "sequencer-1" \
+  --source-gasprice "0.0000025stake" \
+  --source-prefix "cosmos" \
+  --source-gaslimit 300000 \
+  --target-rpc "http://0.0.0.0:26659" \
+  --target-faucet "http://0.0.0.0:4501" \
+  --target-port "sequencer" \
+  --target-version "sequencer-1" \
+  --target-gasprice "0.0000025stake" \
+  --target-prefix "cosmos" \
+  --target-gaslimit 300000
+
+// activate relayer connection with nodes.
+$ ignite relayer connect
 ```
 
-The frontend app is built using the `@starport/vue` and `@starport/vuex` packages. For details, see the [monorepo for Ignite front-end development](https://github.com/ignite/web).
+## Running Sequencer example
 
-## Release
-
-To release a new version of your blockchain, create and push a new tag with `v` prefix. A new draft release with the configured targets will be created.
-
+### create transaction & send encrypted tx to sequencer(mars)
 ```
-git tag v0.1
-git push origin v0.1
+$ ibc_sequencerd tx sequencer create-tx-pool <Index> <hash<enc<Tx>>> <enc<Tx>> <Round> --from alice --chain-id mars --home ~/.mars
 ```
 
-After a draft release is created, make your final changes from the release page and publish it.
-
-### Install
-
-To install the latest version of your blockchain node's binary, execute the following command on your machine:
-
+### stop receiving encrypted tx and send tx list commitment to rollup(venus) via IBC
 ```
-curl https://get.ignite.com/username/ibc_sequencer@latest! | sudo bash
+$ ibc_sequencerd tx sequencer close-round <Round> --from alice --chain-id mars --home ~/.mars -b block
 ```
 
-`username/ibc_sequencer` should match the `username` and `repo_name` of the Github repository to which the source code was pushed. Learn more about [the install process](https://github.com/allinbits/starport-installer).
+### send payload to rollup when rollup accept sequencer's commitment
+```
+$ ibc_sequencerd tx sequencer send-payload sequencer channel-0 <Round> <hash<enc<Tx>[]>> --from alice --chain-id mars --home ~/.mars -y
+```
 
-## Learn more
+### user can send time-lock puzzle for decrypt tx to rollup(venus) via IBC
+```
+$ ibc_sequencerd tx sequencer send-tlp sequencer channel-0 <hash<enc<Tx>>> <tlp<key>> --from alice --chain-id mars --home ~/.mars -y
+```
 
-- [Ignite CLI](https://ignite.com/cli)
-- [Tutorials](https://docs.ignite.com/guide)
-- [Ignite CLI docs](https://docs.ignite.com)
-- [Cosmos SDK docs](https://docs.cosmos.network)
-- [Developer Chat](https://discord.gg/ignite)
+### make block with decrypted tx
+```
+$ ibc_sequencerd tx sequencer make-block <Round> --from alice --chain-id venus --home ~/.venus -y
+```
 
 ## Time-lock puzzle and encryption related
 
