@@ -34,31 +34,31 @@ $ ignite relayer connect
 
 ## Running Sequencer example
 
-### create transaction & send encrypted tx to sequencer(mars)
+### Create transaction & send encrypted tx to sequencer(mars)
 
 ```
 $ ibc_sequencerd tx sequencer create-tx-pool <Index> <hash<enc<Tx>>> <enc<Tx>> <Round> --from alice --chain-id mars --home ~/.mars
 ```
 
-### stop receiving encrypted tx and send tx list commitment to rollup(venus) via IBC
+### Stop receiving encrypted tx and send tx list commitment to rollup(venus) via IBC
 
 ```
 $ ibc_sequencerd tx sequencer close-round <Round> --from alice --chain-id mars --home ~/.mars -b block
 ```
 
-### send payload to rollup when rollup accepts sequencer's commitment
+### Send payload to rollup when rollup accepts sequencer's commitment
 
 ```
 $ ibc_sequencerd tx sequencer send-payload sequencer channel-0 <Round> <hash<enc<Tx>[]>> --from alice --chain-id mars --home ~/.mars -y
 ```
 
-### user can send time-lock puzzle via IBC so that rollup(venus) can decrypt the tx
+### User can send time-lock puzzle via IBC so that rollup(venus) can decrypt the tx
 
 ```
 $ ibc_sequencerd tx sequencer send-tlp sequencer channel-0 <hash<enc<Tx>>> <tlp<key>> --from alice --chain-id mars --home ~/.mars -y
 ```
 
-### make the block with the decrypted tx
+### Make the block with the decrypted tx
 
 ```
 $ ibc_sequencerd tx sequencer make-block <Round> --from alice --chain-id venus --home ~/.venus -y
