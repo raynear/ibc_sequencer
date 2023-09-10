@@ -1,4 +1,5 @@
 # ibcsequencer
+
 **ibcsequencer** is a blockchain built using Cosmos SDK and Tendermint and created with [Ignite CLI](https://ignite.com/cli).
 
 ## Get started
@@ -26,6 +27,7 @@ npm run serve
 The frontend app is built using the `@starport/vue` and `@starport/vuex` packages. For details, see the [monorepo for Ignite front-end development](https://github.com/ignite/web).
 
 ## Release
+
 To release a new version of your blockchain, create and push a new tag with `v` prefix. A new draft release with the configured targets will be created.
 
 ```
@@ -36,11 +38,13 @@ git push origin v0.1
 After a draft release is created, make your final changes from the release page and publish it.
 
 ### Install
+
 To install the latest version of your blockchain node's binary, execute the following command on your machine:
 
 ```
 curl https://get.ignite.com/username/ibc_sequencer@latest! | sudo bash
 ```
+
 `username/ibc_sequencer` should match the `username` and `repo_name` of the Github repository to which the source code was pushed. Learn more about [the install process](https://github.com/allinbits/starport-installer).
 
 ## Learn more
@@ -50,3 +54,10 @@ curl https://get.ignite.com/username/ibc_sequencer@latest! | sudo bash
 - [Ignite CLI docs](https://docs.ignite.com)
 - [Cosmos SDK docs](https://docs.cosmos.network)
 - [Developer Chat](https://discord.gg/ignite)
+
+## Time-lock puzzle and encryption related
+
+./tlp/createTLP.go generates time-lock puzzle with given seed phrase and minimum amount of seconds needed to be resolved and returns number of iterations and encryption key
+./tlp/encryptTx.go encrypts the tx with given tx key and returns encrypted tx
+./tlp/solveTLP.go receives seed phrase and number of iterations needed to obtain decryption key (===encyption key)
+./decryptTx.go recieves encrypted tx and decryption key and decrypts the tx
