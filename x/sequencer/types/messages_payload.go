@@ -24,7 +24,6 @@ func NewMsgSendPayload(
 		ChannelID:        channelID,
 		TimeoutTimestamp: timeoutTimestamp,
 		Round:            round,
-		Hash:             hash,
 	}
 }
 

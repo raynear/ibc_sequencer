@@ -2,8 +2,13 @@ package keeper
 
 import (
 	"errors"
+	"fmt"
+	"strconv"
+	"strings"
 
 	"ibc_sequencer/x/sequencer/types"
+
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -41,10 +46,22 @@ func (k Keeper) OnRecvPayloadPacket(ctx sdk.Context, packet channeltypes.Packet,
 		return packetAck, err
 	}
 
-	// TODO: raynear
-	// check hash is right
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PostKey))
+	appendedValue := k.cdc.MustMarshal(&data)
+	store.Set(GetRoundBytes(data.Round), appendedValue)
 
 	return packetAck, nil
+}
+
+func GetRoundBytes(round uint64) []byte {
+	bs := fmt.Sprintf("%d", round)
+
+	var bb []byte
+	for _, ps := range strings.Split(strings.Trim(bs, "[]"), " ") {
+		pi, _ := strconv.Atoi(ps)
+		bb = append(bb, byte(pi))
+	}
+	return bb
 }
 
 // OnAcknowledgementPayloadPacket responds to the the success or failure of a packet

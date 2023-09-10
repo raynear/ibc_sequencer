@@ -61,7 +61,6 @@ message MsgSendCommitmentResponse {}
 
 message MsgSendPayload {
            uint64 round            = 5;
-           string hash             = 6;
            string creator          = 1;
            string port             = 2;
            string channelID        = 3;

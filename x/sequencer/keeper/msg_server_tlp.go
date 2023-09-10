@@ -12,8 +12,6 @@ import (
 func (k msgServer) SendTlp(goCtx context.Context, msg *types.MsgSendTlp) (*types.MsgSendTlpResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: raynear
-
 	// Construct the packet
 	var packet types.TlpPacketData
 

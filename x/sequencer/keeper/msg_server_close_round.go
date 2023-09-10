@@ -14,7 +14,6 @@ import (
 func (k msgServer) CloseRound(goCtx context.Context, msg *types.MsgCloseRound) (*types.MsgCloseRoundResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: raynear
 	all := k.GetAllTxPool(ctx)
 
 	hasher := sha256.New()

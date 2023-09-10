@@ -1,13 +1,15 @@
 package keeper
 
 import (
-	"encoding/binary"
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
-	"time"
+	"fmt"
 
 	"ibc_sequencer/x/sequencer/types"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	clienttypes "github.com/cosmos/ibc-go/v6/modules/core/02-client/types"
@@ -44,27 +46,71 @@ func (k Keeper) OnRecvTlpPacket(ctx sdk.Context, packet channeltypes.Packet, dat
 		return packetAck, err
 	}
 
-	// TODO: raynear
-	// key := solveTLP(data.Tlp)
-	// tx := k.GetTxPool(ctx, 0)
-	// dec_tx := decrypt(key, tx.payload)
-	// add_dec_tx(dec_tx)
-	// k.SetBlock(ctx, types.Block{Txs: })
-
-	go waitAndDoSomething(ctx, k, data)
+	go solveTLPAndPushTx(ctx, k, data)
 
 	return packetAck, nil
 }
 
-func waitAndDoSomething(ctx sdk.Context, k Keeper, data types.TlpPacketData) {
-	// Calling Sleep method
-	time.Sleep(15 * time.Second)
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PostKey))
-	appendedValue := k.cdc.MustMarshal(&data)
-	bz := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz, 0)
-	store.Set(bz, appendedValue)
-	// 맘대로 저장하기
+func solveTLPAndPushTx(ctx sdk.Context, k Keeper, data types.TlpPacketData) {
+	txs := k.GetAllTxPool(ctx)
+	for i := 0; i < len(txs); i++ {
+		if txs[i].Hash == data.Hash {
+			key := solveTLP(data.Tlp)
+			dec_tx, err := decrypt(key, txs[i].Payload)
+
+			if err != nil {
+				var newTx types.TxPool
+				newTx.Payload = fmt.Sprintf("%v", dec_tx)
+				newTx.Creator = txs[i].Creator
+				newTx.Index = txs[i].Index
+				newTx.Round = txs[i].Round
+				newTx.Hash = "done"
+				k.SetTxPool(ctx, newTx)
+			}
+		}
+	}
+}
+
+func decrypt(key []byte, cipherTextHex string) ([]byte, error) {
+	// Convert the hexadecimal string back to a byte slice
+	cipherText, err := hex.DecodeString(cipherTextHex)
+	if err != nil {
+		return nil, err
+	}
+
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, err
+	}
+
+	// Extract the IV from the cipherText
+	iv := cipherText[:aes.BlockSize]
+	cipherText = cipherText[aes.BlockSize:]
+
+	// Create a new AES cipher block mode
+	stream := cipher.NewCTR(block, iv)
+
+	// Decrypt the cipherText
+	plainText := make([]byte, len(cipherText))
+	stream.XORKeyStream(plainText, cipherText)
+
+	return plainText, nil
+}
+
+func solveTLP(seed string) []byte {
+	numIterations := 26665975
+
+	// Initialize a variable to hold the current hash value
+	currentHash := seed
+
+	for i := 0; i < numIterations; i++ {
+		hash := sha256.New()
+		hash.Write([]byte(currentHash))
+		hashBytes := hash.Sum(nil)
+		currentHash = hex.EncodeToString(hashBytes)
+	}
+
+	return []byte(currentHash[:32])
 }
 
 // OnAcknowledgementTlpPacket responds to the the success or failure of a packet

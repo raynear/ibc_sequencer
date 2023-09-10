@@ -11,11 +11,16 @@ import (
 func (k msgServer) MakeBlock(goCtx context.Context, msg *types.MsgMakeBlock) (*types.MsgMakeBlockResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: raynear
-	_ = ctx
-	// make block from stored dec_tx
-	// k.CreateBlock(ctx, )
-	// 저장한거 걍 가져다가 block만들기 - DB에 저장하기
+	txs := k.GetAllTxPool(ctx)
+
+	var block types.Block
+	for i := 0; i < len(txs); i++ {
+		if txs[i].Round == msg.Round && txs[i].Hash == "done" {
+			block.Txs = append(block.Txs, txs[i].Payload)
+		}
+	}
+
+	k.SetBlock(ctx, block)
 
 	return &types.MsgMakeBlockResponse{}, nil
 }

@@ -14,7 +14,6 @@ import (
 func (k msgServer) SendPayload(goCtx context.Context, msg *types.MsgSendPayload) (*types.MsgSendPayloadResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: raynear
 	// reduce parameter
 	all := k.GetAllTxPool(ctx)
 
